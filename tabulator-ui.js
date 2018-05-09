@@ -6,7 +6,8 @@
         var tabs = {}, // to-be module
             tabGroups = storage.tabGroups || [], // tab groups
             opts = storage.options || {
-                deleteTabOnOpen: 'no'
+                deleteTabOnOpen: 'no',
+                includePinnedTabs: 'yes'
             };
 
         function saveTabGroups(json) {
@@ -75,7 +76,7 @@
                         } }),
                         m('span.group-amount', group.tabs().length + ' Tabs'),
                         ' ',
-                        m('span.group-date', moment(group.date()).format('HH:mm:ss, YYYY-MM-DD')),
+                        m('span.group-date', moment(group.date()).format('MM-DD-YYYY')),
                         ' ',
                         m('span.restore-all', { onclick: function () {
                             var i;

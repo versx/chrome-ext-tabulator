@@ -21,4 +21,14 @@
         });
     });
 
+    document.getElementById('save-active').addEventListener('click', function () {
+        chrome.tabs.query({ currentWindow: true }, function (tabsArr) {
+            chrome.runtime.sendMessage({ action: 'saveActive', tabsArr: tabsArr }, function (res) {
+                if (res === 'ok') {
+                    window.close();
+                }
+            });
+        });
+    });
+
 }());
