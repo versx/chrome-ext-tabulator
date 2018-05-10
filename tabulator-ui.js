@@ -14,9 +14,19 @@
             chrome.storage.sync.set({ tabGroups: json });
         }
 
+        function updateTitle(id, title) {
+            for (var i in tabGroups) {
+                if (tabGroups[i].id == id) {
+                   tabGroups[i].title = title;
+                   break;
+                }
+            }
+        }
+
         // model entity
         // 'data' is meant to be a tab group object from localStorage
         tabs.TabGroup = function (data) {
+            console.log("Tab: ", data);
             this.date = m.prop(data.date);
             this.id   = m.prop(data.id);
             this.tabs = m.prop(data.tabs);
@@ -56,6 +66,7 @@
         tabs.controller = function () {
             var i;
             tabs.vm.init();
+
             for (i = 0; i < tabGroups.length; i += 1) {
                 tabs.vm.list.push(new tabs.TabGroup(tabGroups[i]));
             }
@@ -68,15 +79,20 @@
 
             // foreach tab group
             return tabs.vm.list.map(function (group, i) {
+                //console.log("Title: ", group.title);
                 // group
                 return m('div.group', [
                     m('div.group-title', [
                         m('span.delete-link', { onclick: function () {
-                            tabs.vm.rmGroup(i);
+                            if (confirm('Are you sure you want to delete this tab group?')) {
+                                tabs.vm.rmGroup(i);
+                            }
                         } }),
+                        m('span.group-name', group.title == '' && group.title == null ? '' : group.title),
+                        ' ',
                         m('span.group-amount', group.tabs().length + ' Tabs'),
                         ' ',
-                        m('span.group-date', moment(group.date()).format('MM-DD-YYYY')),
+                        m('span.group-date', moment(group.date()).format('M/D/YYYY h:mm:ss A')),
                         ' ',
                         m('span.restore-all', { onclick: function () {
                             var i;
@@ -95,7 +111,15 @@
                                     pinned: group.tabs()[i].pinned
                                 });
                             }
-                        } }, 'Restore group')
+                        } }, 'Restore group'),
+                        ' ',
+                        m('span.rename', { onclick: function () {
+                            group.title = prompt("Enter a name to rename the tab group to:", group.title);
+                            //updateTitle(group.id, group.title);
+                            //saveTabGroups(tabGroups);
+                            chrome.storage.sync.set({ tabGroups: tabGroups });
+                            
+                        } }, 'Rename group')
                     ]),
 
                     // foreach tab

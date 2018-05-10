@@ -20,7 +20,8 @@
     function makeTabGroup(tabsArr) {
         var tabGroup = {
                 date: new Date(),
-                id: Date.now() // clever way to quickly get a unique ID
+                id: Date.now(), // clever way to quickly get a unique ID
+                title: '',
             };
 
         tabGroup.tabs = tabsArr;
@@ -39,12 +40,21 @@
         var filteredTabs = [];
 
         tabsArr.forEach(tab => {
+            if (tab.pinned) {
+                if (Options.includePinnedTabs == 'yes') {
+                    filteredTabs.push(tab);
+                }
+            } else {
+                filteredTabs.push(tab);
+            }
+            /*
             if (tab.pinned && Options.includePinnedTabs == 'yes' ||
-                !tab.pinned && Options.includePinnedTabs == 'no' ||
-                !tab.pinned && Options.includePinnedTabs == 'yes') {
+            !tab.pinned && Options.includePinnedTabs == 'no' ||
+            !tab.pinned && Options.includePinnedTabs == 'yes') {
                 console.log(tab.url);
                 filteredTabs.push(tab);
             }
+            */
         });
 
         return filteredTabs;
@@ -71,12 +81,10 @@
         var tabsToClose = [], i;
         var filtered = filterTabs(tabsArr);
 
-        console.log("close tabs");
         for (i = 0; i < filtered.length; i += 1) {
             tabsToClose.push(filtered[i].id);
             console.log({ url: filtered[i].url, pinned: filtered[i].pinned })
         }
-        console.log("end close tabs");
 
         chrome.tabs.remove(tabsToClose, function () {
             if (chrome.runtime.lastError) {
@@ -141,7 +149,7 @@
 
     var Options = {};
     chrome.storage.sync.get('options', function (storage) {
-        Options = storage.options;
+        Options = storage.options || { includePinnedTabs: "yes", deleteTabOnOpen: "no" };
     });
 
     //#region Context Menus
@@ -151,6 +159,19 @@
         type: 'normal',
         id: 'main',
         contexts: ['page']
+    });
+    chrome.contextMenus.create({
+        title: 'Open Tabulator',
+        type: 'normal',
+        id: 'backgroundPage',
+        contexts: ['page'],
+        parentId: 'main'
+    });
+    chrome.contextMenus.create({
+        type: 'separator',
+        id: 'separator0',
+        contexts: ['page'],
+        parentId: 'main'
     });
     chrome.contextMenus.create({
         title: 'Test',
@@ -190,6 +211,8 @@
     chrome.contextMenus.onClicked.addListener(function(itemData,tab) {
         if (itemData.menuItemId === 'test') {
             getTabs(itemData, tab);
+        } else if (itemData.menuItemId === 'backgroundPage') {
+            openBackgroundPage();
         } else if (itemData.menuItemId === 'saveOpenTabs') {
             saveAllTabs();
         } else if (itemData.menuItemId === 'saveActiveTab') {

@@ -24,6 +24,14 @@ body {
 	padding-left: 10px;
 }
 
+.container { position: relative; }
+.top, .bottom { position: absolute; left: 50px; }
+
+.right {
+	text-align: right; 
+	float: right;
+}
+
 .group:first-of-type {
 	margin-top: 10px;
 }
@@ -32,16 +40,42 @@ body {
 }
 
 .group-amount {
-	font-size: 2em;
+	font-size: 1.4em;
+	opacity: 0.7;
+	margin-left: 15px;
+}
+
+.group-name {
+	font-size: 1.4em;
+	opacity: 0.7;
 }
 
 .group-date {
 	opacity: 0.7;
+	font-size: 0.8em;
+	margin-top: 0px;
+	margin-left: 40px;
+	position: absolute;
+}
+
+.rename {
+	cursor: pointer;
+	font-size: 0.8em;
+	margin-top: 15px;
+	margin-left: 150px;
+	position: absolute;
+}
+.rename:hover {
+	color: blue;
+	text-decoration: underline;
 }
 
 .restore-all {
-	margin-left: 5px;
 	cursor: pointer;
+	font-size: 0.8em;
+	margin-top: 15px;
+	margin-left: 40px;
+	position: absolute;
 }
 .restore-all:hover {
 	color: blue;
@@ -59,16 +93,18 @@ li {
 .delete-link {
 	font-size: .9em;
 	font-weight: bold;
-	background: #eee;
-	color: white;
+	/*background: #eee;*/
+	color: black;
 
 	display: inline-block;
 	border-radius: 1em;
 	padding: 0 .3em;
 	margin-right: 10px;
+	position: absolute;
+	left: 50px;
 }
 .delete-link:before {
-	content: "X";
+	content: "x";
 }
 *:hover > .delete-link {
 	background: #aaa;
